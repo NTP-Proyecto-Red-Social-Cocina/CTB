@@ -23,6 +23,7 @@ Route::group(['prefix' => 'parcial2','middleware' => 'cross.angular'], function 
     Route::resource('posts', 'PostController');
     Route::resource('comentarios', 'ComentarioController');
     Route::resource('calificacions', 'CalificacionController');
+    Route::get('calificacions/{user_id}/{post_id}', 'CalificacionController@Show');
 });
 
 

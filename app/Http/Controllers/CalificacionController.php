@@ -36,7 +36,26 @@ class CalificacionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if ((!$request->nota)
+        ) {
+            $response = Response::json([
+                'message' => 'Campo incompleto'
+            ], 422);
+            return $response;
+        }
+
+        $calif = new Calificacion();
+        $calif->nota = trim($request->nota);
+        $calif->post_id = trim($request->post_id);
+        $calif->user_id = trim($request->user_id);
+        $calif->save();
+
+        $message = 'Calificacion Creada Exitosamente';
+        $response = Response::json([
+            'message' => $message,
+            'data' => $calif,
+        ], 201);
+        return $response;
     }
 
     /**
@@ -45,9 +64,18 @@ class CalificacionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($user_id,$post_id)
     {
-        //
+        $calif = Calificacion::where('post_id', '=', $post_id)
+        ->where('user_id', '=', $user_id);
+        if (!$calif) {
+            return Response::json([
+                'error' => [
+                    'message' => "Calificacion no existente"
+                ]
+                ],404);
+        }
+        return Response::json($calif, 200);
     }
 
     /**
@@ -68,9 +96,34 @@ class CalificacionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $post_id, $user_id)
     {
-        //
+        if ((!$request->nota)
+        ) {
+            $response = Response::json([
+                'message' => 'Campo incompleto'
+            ], 422);
+            return $response;
+        }
+
+        $calif = Calificacion::where('post_id', '=', $post_id)
+        ->where('user_id', '=', $user_id);
+        if (!$calif) {
+            return Response::json([
+                'error' => [
+                    'message' => "Calificacion no existente"
+                ]
+                ],404);
+        }
+        $calif->nota = trim($request->nota);
+        $calif->save();
+
+        $message = 'Calificacion Actualizada Exitosamente';
+        $response = Response::json([
+            'message' => $message,
+            'data' => $calif,
+        ], 201);
+        return $response;
     }
 
     /**
@@ -81,6 +134,15 @@ class CalificacionController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $calif = Calificacion::find($id);
+        if (!$calif) {
+            return Response::json([
+                'error' => [
+                    'message' => "Calificacion no existente"
+                ]
+                ],404);
+        }
+        $del = $calif->delete();
+        return Response::json($del, 200);
     }
 }
